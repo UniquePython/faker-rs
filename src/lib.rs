@@ -1,3 +1,5 @@
+mod providers;
+
 use rand::RngCore;
 
 /// A Provider knows how to generate values for one or more "fakes"
