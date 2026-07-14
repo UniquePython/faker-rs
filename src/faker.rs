@@ -17,7 +17,7 @@ impl Faker {
         }
     }
 
-    pub fn seed(&mut self, seed: u64) -> () {
+    pub fn seed(&mut self, seed: u64) {
         self.rng = StdRng::seed_from_u64(seed);
     }
 
@@ -46,5 +46,107 @@ impl Faker {
 
         self.providers.push(provider);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rand::RngCore;
+
+    struct TestProvider {
+        fakes: Vec<&'static str>,
+    }
+
+    impl Provider for TestProvider {
+        fn generate(&self, _fake_name: &str, _rng: &mut dyn RngCore) -> Option<String> {
+            None
+        }
+
+        fn supported_fakes(&self) -> Vec<&'static str> {
+            self.fakes.clone()
+        }
+    }
+
+    #[test]
+    fn add_single_provider_succeeds() {
+        let mut faker = Faker::new();
+
+        let provider = Box::new(TestProvider {
+            fakes: vec!["name"],
+        });
+
+        assert!(faker.add_provider(provider).is_ok());
+        assert_eq!(faker.providers.len(), 1);
+    }
+
+    #[test]
+    fn add_two_non_conflicting_providers_succeeds() {
+        let mut faker = Faker::new();
+
+        let provider1 = Box::new(TestProvider {
+            fakes: vec!["name"],
+        });
+
+        let provider2 = Box::new(TestProvider {
+            fakes: vec!["city"],
+        });
+
+        assert!(faker.add_provider(provider1).is_ok());
+        assert!(faker.add_provider(provider2).is_ok());
+
+        assert_eq!(faker.providers.len(), 2);
+    }
+
+    #[test]
+    fn add_conflicting_provider_returns_error_and_does_not_add() {
+        let mut faker = Faker::new();
+
+        let provider1 = Box::new(TestProvider {
+            fakes: vec!["name"],
+        });
+
+        let provider2 = Box::new(TestProvider {
+            fakes: vec!["name"],
+        });
+
+        assert!(faker.add_provider(provider1).is_ok());
+
+        let result = faker.add_provider(provider2);
+
+        assert_eq!(
+            result,
+            Err(ProviderError::NameConflict {
+                fake_name: "name".to_string(),
+            })
+        );
+
+        assert_eq!(faker.providers.len(), 1);
+    }
+
+    #[test]
+    fn add_normalized_conflicting_provider_returns_error_and_does_not_add() {
+        let mut faker = Faker::new();
+
+        let provider1 = Box::new(TestProvider {
+            fakes: vec!["name"],
+        });
+
+        let provider2 = Box::new(TestProvider {
+            fakes: vec![" Name "],
+        });
+
+        assert!(faker.add_provider(provider1).is_ok());
+
+        let result = faker.add_provider(provider2);
+
+        assert_eq!(
+            result,
+            Err(ProviderError::NameConflict {
+                fake_name: "name".to_string(),
+            })
+        );
+
+        assert_eq!(faker.providers.len(), 1);
     }
 }
