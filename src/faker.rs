@@ -5,14 +5,14 @@ use crate::name_provider::NameProvider;
 
 pub struct Faker {
     pub(crate) rng: StdRng,
-    pub(crate) name_provider: NameProvider,
+    pub(crate) name: NameProvider,
 }
 
 impl Faker {
     pub fn new() -> Self {
         Faker {
             rng: StdRng::from_entropy(),
-            name_provider: NameProvider::new(),
+            name: NameProvider::new(),
         }
     }
 

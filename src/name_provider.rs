@@ -84,22 +84,22 @@ pub trait NameFaker {
 
 impl NameFaker for Faker {
     fn male_first_name(&mut self) -> String {
-        self.name_provider.male_first_name(&mut self.rng)
+        self.name.male_first_name(&mut self.rng)
     }
 
     fn female_first_name(&mut self) -> String {
-        self.name_provider.female_first_name(&mut self.rng)
+        self.name.female_first_name(&mut self.rng)
     }
 
     fn first_name(&mut self) -> String {
-        self.name_provider.first_name(&mut self.rng)
+        self.name.first_name(&mut self.rng)
     }
 
     fn last_name(&mut self) -> String {
-        self.name_provider.last_name(&mut self.rng)
+        self.name.last_name(&mut self.rng)
     }
 
     fn full_name(&mut self) -> String {
-        self.name_provider.full_name(&mut self.rng)
+        self.name.full_name(&mut self.rng)
     }
 }
