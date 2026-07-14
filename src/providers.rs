@@ -2,8 +2,14 @@ use crate::Provider;
 use rand::seq::SliceRandom;
 use rand::RngCore;
 
-struct SimpleNameProvider {
+pub struct SimpleNameProvider {
     names: Vec<&'static str>,
+}
+
+impl SimpleNameProvider {
+    pub fn new(names: Vec<&'static str>) -> Self {
+        SimpleNameProvider { names }
+    }
 }
 
 impl Provider for SimpleNameProvider {
@@ -24,9 +30,7 @@ mod tests {
 
     #[test]
     fn generates_a_known_name() {
-        let provider = SimpleNameProvider {
-            names: vec!["Alice", "Bob", "Charlie"],
-        };
+        let provider = SimpleNameProvider::new(vec!["Alice", "Bob", "Charlie"]);
 
         let mut rng = StdRng::seed_from_u64(42);
 
@@ -40,9 +44,7 @@ mod tests {
 
     #[test]
     fn returns_none_for_unknown_fake_name() {
-        let provider = SimpleNameProvider {
-            names: vec!["Alice", "Bob", "Charlie"],
-        };
+        let provider = SimpleNameProvider::new(vec!["Alice", "Bob", "Charlie"]);
 
         let mut rng = StdRng::seed_from_u64(42);
 
