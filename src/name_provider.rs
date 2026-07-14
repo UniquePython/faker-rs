@@ -65,41 +65,41 @@ impl NameProvider {
 /// A NameFaker knows how to generate various kinds of names.
 pub trait NameFaker {
     /// Generate a random male first name.
-    fn male_first_name(&mut self) -> String;
+    fn male_first(&mut self) -> String;
 
     /// Generate a random female first name.
-    fn female_first_name(&mut self) -> String;
+    fn female_first(&mut self) -> String;
 
     /// Generate a random first name.
     /// The returned name may be either male or female.
-    fn first_name(&mut self) -> String;
+    fn first(&mut self) -> String;
 
     /// Generate a random last name.
-    fn last_name(&mut self) -> String;
+    fn last(&mut self) -> String;
 
     /// Generate a random full name.
     /// Typically consists of a first name followed by a last name.
-    fn full_name(&mut self) -> String;
+    fn full(&mut self) -> String;
 }
 
 impl NameFaker for Faker {
-    fn male_first_name(&mut self) -> String {
+    fn male_first(&mut self) -> String {
         self.name.male_first_name(&mut self.rng)
     }
 
-    fn female_first_name(&mut self) -> String {
+    fn female_first(&mut self) -> String {
         self.name.female_first_name(&mut self.rng)
     }
 
-    fn first_name(&mut self) -> String {
+    fn first(&mut self) -> String {
         self.name.first_name(&mut self.rng)
     }
 
-    fn last_name(&mut self) -> String {
+    fn last(&mut self) -> String {
         self.name.last_name(&mut self.rng)
     }
 
-    fn full_name(&mut self) -> String {
+    fn full(&mut self) -> String {
         self.name.full_name(&mut self.rng)
     }
 }
