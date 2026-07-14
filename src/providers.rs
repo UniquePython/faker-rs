@@ -13,12 +13,16 @@ impl SimpleNameProvider {
 }
 
 impl Provider for SimpleNameProvider {
-    fn generate(&self, fake_name: &str, rng: &mut dyn RngCore) -> Option<String> {
-        if fake_name != "name" {
+    fn generate(&self, fake: &str, rng: &mut dyn RngCore) -> Option<String> {
+        if fake != "name" {
             return None;
         }
 
         self.names.choose(rng).map(|name| name.to_string())
+    }
+
+    fn supported_fakes(&self) -> Vec<&'static str> {
+        vec!["name"]
     }
 }
 

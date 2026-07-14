@@ -9,4 +9,9 @@ pub trait Provider {
     /// Returns `None` if this provider doesn't recognize the name,
     /// so the caller can try other providers.
     fn generate(&self, fake_name: &str, rng: &mut dyn RngCore) -> Option<String>;
+
+    /// Return the fake names recognized by this provider.
+    /// The caller can use this to discover which fake values
+    /// this provider is capable of generating.
+    fn supported_fakes(&self) -> Vec<&'static str>;
 }
