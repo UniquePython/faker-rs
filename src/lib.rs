@@ -1,3 +1,4 @@
+mod error;
 mod providers;
 
 use rand::RngCore;

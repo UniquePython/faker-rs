@@ -2,6 +2,7 @@ use crate::Provider;
 use rand::seq::SliceRandom;
 use rand::RngCore;
 
+#[derive(Debug)]
 pub struct SimpleNameProvider {
     names: Vec<&'static str>,
 }
