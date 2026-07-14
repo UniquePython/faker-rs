@@ -1,6 +1,8 @@
-use crate::Provider;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use rand::RngCore;
+
+use crate::faker::Faker;
 
 const MALE_FIRST_NAMES_RAW: &str = include_str!("../data/male_first_names.txt");
 const FEMALE_FIRST_NAMES_RAW: &str = include_str!("../data/female_first_names.txt");
@@ -41,7 +43,7 @@ impl NameProvider {
     }
 
     pub fn first_name(&self, rng: &mut dyn RngCore) -> String {
-        if rng.next_u32() % 2 == 0 {
+        if rng.gen_bool(0.5) {
             self.male_first_name(rng)
         } else {
             self.female_first_name(rng)
@@ -60,59 +62,44 @@ impl NameProvider {
     }
 }
 
-impl Provider for NameProvider {
-    fn generate(&self, fake: &str, rng: &mut dyn RngCore) -> Option<String> {
-        match fake {
-            "name" => Some(self.full_name(rng)),
-            _ => None,
-        }
-    }
+/// A NameFaker knows how to generate various kinds of names.
+pub trait NameFaker {
+    /// Generate a random male first name.
+    fn male_first_name(&mut self) -> String;
 
-    fn supported_fakes(&self) -> Vec<&'static str> {
-        vec!["name"]
-    }
+    /// Generate a random female first name.
+    fn female_first_name(&mut self) -> String;
+
+    /// Generate a random first name.
+    /// The returned name may be either male or female.
+    fn first_name(&mut self) -> String;
+
+    /// Generate a random last name.
+    fn last_name(&mut self) -> String;
+
+    /// Generate a random full name.
+    /// Typically consists of a first name followed by a last name.
+    fn full_name(&mut self) -> String;
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use rand::rngs::StdRng;
-    use rand::SeedableRng;
-
-    #[test]
-    fn generates_a_known_name() {
-        let provider = NameProvider::new();
-
-        let mut rng = StdRng::seed_from_u64(42);
-
-        let result = provider.generate("name", &mut rng);
-
-        assert!(result.is_some());
-
-        let name = result.unwrap();
-        let mut parts = name.split_whitespace();
-
-        let first = parts.next().unwrap();
-        let last = parts.next().unwrap();
-
-        assert!(parts.next().is_none()); // exactly two parts
-
-        assert!(
-            provider.male_first_names.contains(&first)
-                || provider.female_first_names.contains(&first)
-        );
-
-        assert!(provider.last_names.contains(&last));
+impl NameFaker for Faker {
+    fn male_first_name(&mut self) -> String {
+        self.name_provider.male_first_name(&mut self.rng)
     }
 
-    #[test]
-    fn returns_none_for_unknown_fake_name() {
-        let provider = NameProvider::new();
+    fn female_first_name(&mut self) -> String {
+        self.name_provider.female_first_name(&mut self.rng)
+    }
 
-        let mut rng = StdRng::seed_from_u64(42);
+    fn first_name(&mut self) -> String {
+        self.name_provider.first_name(&mut self.rng)
+    }
 
-        let result = provider.generate("bogus", &mut rng);
+    fn last_name(&mut self) -> String {
+        self.name_provider.last_name(&mut self.rng)
+    }
 
-        assert_eq!(result, None);
+    fn full_name(&mut self) -> String {
+        self.name_provider.full_name(&mut self.rng)
     }
 }
