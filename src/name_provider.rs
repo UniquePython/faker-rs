@@ -9,7 +9,7 @@ const FEMALE_FIRST_NAMES_RAW: &str = include_str!("../data/female_first_names.tx
 const LAST_NAMES_RAW: &str = include_str!("../data/last_names.txt");
 
 #[derive(Debug)]
-pub struct NameProvider {
+pub(crate) struct NameProvider {
     male_first_names: Vec<&'static str>,
     female_first_names: Vec<&'static str>,
     last_names: Vec<&'static str>,
@@ -20,7 +20,7 @@ impl NameProvider {
         names.lines().filter(|name| *name != "").collect()
     }
 
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         NameProvider {
             male_first_names: Self::parse_names(MALE_FIRST_NAMES_RAW),
             female_first_names: Self::parse_names(FEMALE_FIRST_NAMES_RAW),
@@ -28,21 +28,21 @@ impl NameProvider {
         }
     }
 
-    pub fn male_first_name(&self, rng: &mut dyn RngCore) -> String {
+    fn male_first_name(&self, rng: &mut dyn RngCore) -> String {
         self.male_first_names
             .choose(rng)
             .expect("male_first_names is empty")
             .to_string()
     }
 
-    pub fn female_first_name(&self, rng: &mut dyn RngCore) -> String {
+    fn female_first_name(&self, rng: &mut dyn RngCore) -> String {
         self.female_first_names
             .choose(rng)
             .expect("female_first_names is empty")
             .to_string()
     }
 
-    pub fn first_name(&self, rng: &mut dyn RngCore) -> String {
+    fn first_name(&self, rng: &mut dyn RngCore) -> String {
         if rng.gen_bool(0.5) {
             self.male_first_name(rng)
         } else {
@@ -50,14 +50,14 @@ impl NameProvider {
         }
     }
 
-    pub fn last_name(&self, rng: &mut dyn RngCore) -> String {
+    fn last_name(&self, rng: &mut dyn RngCore) -> String {
         self.last_names
             .choose(rng)
             .expect("last_names is empty")
             .to_string()
     }
 
-    pub fn full_name(&self, rng: &mut dyn RngCore) -> String {
+    fn full_name(&self, rng: &mut dyn RngCore) -> String {
         format!("{} {}", self.first_name(rng), self.last_name(rng))
     }
 }
