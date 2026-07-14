@@ -67,7 +67,7 @@ impl Faker {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::simple_name_provider::SimpleNameProvider;
+    use crate::name_provider::NameProvider;
     use rand::RngCore;
 
     struct TestProvider {
@@ -171,11 +171,7 @@ mod tests {
         let mut faker = Faker::new();
         faker.seed(42);
 
-        faker
-            .add_provider(Box::new(SimpleNameProvider::new(vec![
-                "Alice", "Bob", "Charlie",
-            ])))
-            .unwrap();
+        faker.add_provider(Box::new(NameProvider::new())).unwrap();
 
         let result = faker.generate("name");
 
@@ -189,11 +185,7 @@ mod tests {
     fn generate_unknown_fake_returns_none() {
         let mut faker = Faker::new();
 
-        faker
-            .add_provider(Box::new(SimpleNameProvider::new(vec![
-                "Alice", "Bob", "Charlie",
-            ])))
-            .unwrap();
+        faker.add_provider(Box::new(NameProvider::new())).unwrap();
 
         assert_eq!(faker.generate("bogus"), None);
     }
@@ -202,19 +194,11 @@ mod tests {
     fn same_seed_produces_same_sequence() {
         let mut faker1 = Faker::new();
         faker1.seed(42);
-        faker1
-            .add_provider(Box::new(SimpleNameProvider::new(vec![
-                "Alice", "Bob", "Charlie",
-            ])))
-            .unwrap();
+        faker1.add_provider(Box::new(NameProvider::new())).unwrap();
 
         let mut faker2 = Faker::new();
         faker2.seed(42);
-        faker2
-            .add_provider(Box::new(SimpleNameProvider::new(vec![
-                "Alice", "Bob", "Charlie",
-            ])))
-            .unwrap();
+        faker2.add_provider(Box::new(NameProvider::new())).unwrap();
 
         for _ in 0..10 {
             assert_eq!(faker1.generate("name"), faker2.generate("name"));

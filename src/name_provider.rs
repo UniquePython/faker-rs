@@ -2,18 +2,22 @@ use crate::Provider;
 use rand::seq::SliceRandom;
 use rand::RngCore;
 
+const FIRST_NAMES_RAW: &str = include_str!("../data/first_names.txt");
+
 #[derive(Debug)]
-pub struct SimpleNameProvider {
+pub struct NameProvider {
     names: Vec<&'static str>,
 }
 
-impl SimpleNameProvider {
-    pub fn new(names: Vec<&'static str>) -> Self {
-        SimpleNameProvider { names }
+impl NameProvider {
+    pub fn new() -> Self {
+        NameProvider {
+            names: FIRST_NAMES_RAW.lines().filter(|name| *name != "").collect(),
+        }
     }
 }
 
-impl Provider for SimpleNameProvider {
+impl Provider for NameProvider {
     fn generate(&self, fake: &str, rng: &mut dyn RngCore) -> Option<String> {
         if fake != "name" {
             return None;
@@ -35,7 +39,7 @@ mod tests {
 
     #[test]
     fn generates_a_known_name() {
-        let provider = SimpleNameProvider::new(vec!["Alice", "Bob", "Charlie"]);
+        let provider = NameProvider::new();
 
         let mut rng = StdRng::seed_from_u64(42);
 
@@ -49,7 +53,7 @@ mod tests {
 
     #[test]
     fn returns_none_for_unknown_fake_name() {
-        let provider = SimpleNameProvider::new(vec!["Alice", "Bob", "Charlie"]);
+        let provider = NameProvider::new();
 
         let mut rng = StdRng::seed_from_u64(42);
 
