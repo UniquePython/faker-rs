@@ -2,6 +2,7 @@ use rand::rngs::StdRng;
 use rand::SeedableRng;
 
 use crate::error::ProviderError;
+use crate::name_provider::NameProvider;
 use crate::Provider;
 
 pub struct Faker {
@@ -15,6 +16,16 @@ impl Faker {
             providers: vec![],
             rng: StdRng::from_entropy(),
         }
+    }
+
+    pub fn with_builtins() -> Self {
+        let mut faker = Faker::default();
+
+        faker
+            .add_provider(Box::new(NameProvider::new()))
+            .expect("Built-in NameProvider has conflict");
+
+        faker
     }
 
     pub fn seed(&mut self, seed: u64) {
@@ -61,6 +72,12 @@ impl Faker {
         }
 
         None
+    }
+}
+
+impl Default for Faker {
+    fn default() -> Self {
+        Faker::new()
     }
 }
 
