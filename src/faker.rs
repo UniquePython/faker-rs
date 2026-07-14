@@ -50,11 +50,24 @@ impl Faker {
         self.providers.push(provider);
         Ok(())
     }
+
+    pub fn generate(&mut self, fake: &str) -> Option<String> {
+        let fake = Self::normalize(fake);
+
+        for provider in &self.providers {
+            if let Some(value) = provider.generate(&fake, &mut self.rng) {
+                return Some(value);
+            }
+        }
+
+        None
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::providers::SimpleNameProvider;
     use rand::RngCore;
 
     struct TestProvider {
@@ -151,5 +164,60 @@ mod tests {
         );
 
         assert_eq!(faker.providers.len(), 1);
+    }
+
+    #[test]
+    fn generate_known_fake_returns_value() {
+        let mut faker = Faker::new();
+        faker.seed(42);
+
+        faker
+            .add_provider(Box::new(SimpleNameProvider::new(vec![
+                "Alice", "Bob", "Charlie",
+            ])))
+            .unwrap();
+
+        let result = faker.generate("name");
+
+        assert!(result.is_some());
+
+        let name = result.unwrap();
+        assert!(["Alice", "Bob", "Charlie"].contains(&name.as_str()));
+    }
+
+    #[test]
+    fn generate_unknown_fake_returns_none() {
+        let mut faker = Faker::new();
+
+        faker
+            .add_provider(Box::new(SimpleNameProvider::new(vec![
+                "Alice", "Bob", "Charlie",
+            ])))
+            .unwrap();
+
+        assert_eq!(faker.generate("bogus"), None);
+    }
+
+    #[test]
+    fn same_seed_produces_same_sequence() {
+        let mut faker1 = Faker::new();
+        faker1.seed(42);
+        faker1
+            .add_provider(Box::new(SimpleNameProvider::new(vec![
+                "Alice", "Bob", "Charlie",
+            ])))
+            .unwrap();
+
+        let mut faker2 = Faker::new();
+        faker2.seed(42);
+        faker2
+            .add_provider(Box::new(SimpleNameProvider::new(vec![
+                "Alice", "Bob", "Charlie",
+            ])))
+            .unwrap();
+
+        for _ in 0..10 {
+            assert_eq!(faker1.generate("name"), faker2.generate("name"));
+        }
     }
 }
