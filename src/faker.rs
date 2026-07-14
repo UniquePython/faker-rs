@@ -26,19 +26,22 @@ impl Faker {
     }
 
     pub fn add_provider(&mut self, provider: Box<dyn Provider>) -> Result<(), ProviderError> {
-        let new_fakes: Vec<String> = provider
+        let new_fakes: Vec<(String, String)> = provider
             .supported_fakes()
             .iter()
-            .map(|name| Self::normalize(name))
+            .map(|name| ((*name).to_string(), Self::normalize(name)))
             .collect();
 
         for existing in &self.providers {
             for existing_fake in existing.supported_fakes() {
-                let existing_fake = Self::normalize(existing_fake);
+                let normalized_existing = Self::normalize(existing_fake);
 
-                if new_fakes.contains(&existing_fake) {
+                if let Some((original, _)) = new_fakes
+                    .iter()
+                    .find(|(_, normalized)| *normalized == normalized_existing)
+                {
                     return Err(ProviderError::NameConflict {
-                        fake_name: existing_fake,
+                        fake_name: original.clone(),
                     });
                 }
             }
@@ -143,7 +146,7 @@ mod tests {
         assert_eq!(
             result,
             Err(ProviderError::NameConflict {
-                fake_name: "name".to_string(),
+                fake_name: " Name ".to_string(),
             })
         );
 
