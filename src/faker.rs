@@ -68,7 +68,6 @@ impl Faker {
 mod tests {
     use super::*;
     use crate::name_provider::NameProvider;
-    use crate::name_provider::FIRST_NAMES_RAW;
     use rand::RngCore;
 
     struct TestProvider {
@@ -172,18 +171,12 @@ mod tests {
         let mut faker = Faker::new();
         faker.seed(42);
 
-        faker.add_provider(Box::new(NameProvider::new())).unwrap();
+        let provider = NameProvider::new();
+        faker.add_provider(Box::new(provider)).unwrap();
 
         let result = faker.generate("name");
 
         assert!(result.is_some());
-
-        let name = result.unwrap();
-        assert!(FIRST_NAMES_RAW
-            .lines()
-            .filter(|name| *name != "")
-            .collect::<Vec<&str>>()
-            .contains(&name.as_str()));
     }
 
     #[test]

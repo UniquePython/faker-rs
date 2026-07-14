@@ -2,7 +2,7 @@ use crate::Provider;
 use rand::seq::SliceRandom;
 use rand::RngCore;
 
-pub(crate) const FIRST_NAMES_RAW: &str = include_str!("../data/first_names.txt");
+const FIRST_NAMES_RAW: &str = include_str!("../data/first_names.txt");
 
 #[derive(Debug)]
 pub struct NameProvider {
