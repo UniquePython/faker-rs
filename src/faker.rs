@@ -68,6 +68,7 @@ impl Faker {
 mod tests {
     use super::*;
     use crate::name_provider::NameProvider;
+    use crate::name_provider::FIRST_NAMES_RAW;
     use rand::RngCore;
 
     struct TestProvider {
@@ -178,7 +179,11 @@ mod tests {
         assert!(result.is_some());
 
         let name = result.unwrap();
-        assert!(["Alice", "Bob", "Charlie"].contains(&name.as_str()));
+        assert!(FIRST_NAMES_RAW
+            .lines()
+            .filter(|name| *name != "")
+            .collect::<Vec<&str>>()
+            .contains(&name.as_str()));
     }
 
     #[test]
