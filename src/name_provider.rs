@@ -8,7 +8,7 @@ const MALE_FIRST_NAMES_RAW: &str = include_str!("../data/male_first_names.txt");
 const FEMALE_FIRST_NAMES_RAW: &str = include_str!("../data/female_first_names.txt");
 const LAST_NAMES_RAW: &str = include_str!("../data/last_names.txt");
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct NameProvider {
     male_first_names: Vec<&'static str>,
     female_first_names: Vec<&'static str>,

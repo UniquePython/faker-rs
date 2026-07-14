@@ -3,6 +3,7 @@ use rand::SeedableRng;
 
 use crate::name_provider::NameProvider;
 
+#[derive(Debug)]
 pub struct Faker {
     pub(crate) rng: StdRng,
     pub(crate) name: NameProvider,
