@@ -67,7 +67,7 @@ impl Faker {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::providers::SimpleNameProvider;
+    use crate::simple_name_provider::SimpleNameProvider;
     use rand::RngCore;
 
     struct TestProvider {
